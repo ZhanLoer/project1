@@ -1,106 +1,65 @@
-#include <iostream>
+#include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include <algorithm>
-#include <vector>
-#include <list>
+#include <time.h>
 
-using namespace std;
-struct SListNode
-{
-	float coef;
-	int index;
-	SListNode* next;
-};
-
-SListNode* BuyListNode(float co, int in)
-{
-	SListNode* newnode = new SListNode;
-	if (newnode == nullptr)
-	{
-		exit(-1);
-	}
-	else
-	{
-		newnode->coef = co;
-		newnode->index = in;
-		newnode->next = nullptr;
-	}
-
-	return newnode;
+int generate_random_number(int max_number) {
+    return rand() % (max_number + 1);
 }
 
-void SListPushFront(SListNode*& pphead, float co, int in)
-{
-	SListNode* newnode = BuyListNode(co, in);
-	newnode->next = pphead;
-	pphead = newnode;
+char generate_operator() {
+    char operators[] = {'+', '-', '*', '/'};
+    int index = rand() % 4;
+    return operators[index];
 }
 
-void SListSub(SListNode*& pphead)
-{
-	SListNode* cur = pphead;
-	int maxin = 0;
-	while (cur != nullptr)
-	{
-		if (cur->index > maxin)
-		{
-			maxin = cur->index;
-		}
-		cur = cur->next;
-	}
-	vector<float> v(maxin);
-	cur = pphead;
-	while (cur != nullptr)
-	{
-		float co = cur->coef;
-		int in = cur->index;
-		v[in] += co;
-
-		cur = cur->next;
-	}
-
-	for (int i = 0; i <= maxin; ++i)
-	{
-		if (v[i] != 0)
-		{
-			cout << v[i] << ' ' << i << endl;
-		}
-	}
-	cout << '#';
+void generate_expression(int max_number, char operato, int has_decimal) {
+    int num1 = generate_random_number(max_number);
+    int num2 = generate_random_number(max_number);
+    
+    if (operato == '/' && num2 == 0) {
+        num2 = 1; // avoid division by zero
+    }
+    
+    if (has_decimal) {
+        printf("%d %c %d = %.2f\n", num1, operato, num2, (float)num1 / num2);
+    } else {
+        printf("%d %c %d = %d\n", num1, operato, num2, num1 / num2);
+    }
 }
-int main()
-{
-	SListNode* slist = nullptr;
 
-	float co;
-	int in;
-	char ch;
-	
-	for (int i = 0; i < 3; ++i)
-	{
-		cin >> co >> in;
-		SListPushFront(slist, co, in);
-	}
-	cin >> ch;
-
-	for (int i = 0; i < 3; ++i)
-	{
-		cin >> co >> in;
-		co = -co;
-		SListPushFront(slist, co, in);
-	}
-	cin >> ch;
-
-	for (int i = 0; i < 3; ++i)
-	{
-		cin >> co >> in;
-		co = -co;
-		SListPushFront(slist, co, in);
-	}
-	cin >> ch;
-
-	SListSub(slist);
-
-	return 0;
+int main() {
+    srand(time(NULL));
+    
+    int num_questions, max_number_limit, has_parentheses, has_decimal;
+    char operato;
+    
+    printf("Enter the number of questions: ");
+    scanf("%d", &num_questions);
+    
+    printf("Enter the maximum number limit: ");
+    scanf("%d", &max_number_limit);
+    
+    printf("Choose an operator (+, -, *, /): ");
+    getchar(); // consume newline
+    scanf("%c", &operato);
+    
+    printf("Do you want parentheses? (1 for yes, 0 for no): ");
+    scanf("%d", &has_parentheses);
+    
+    printf("Do you want decimal answers? (1 for yes, 0 for no): ");
+    scanf("%d", &has_decimal);
+    
+    for (int i = 0; i < num_questions; i++) {
+        if (has_parentheses) {
+            printf("(");
+        }
+        
+        generate_expression(max_number_limit, operato, has_decimal);
+        
+        if (has_parentheses) {
+            printf(")");
+        }
+    }
+    system("pause");
+    return 0;
 }
